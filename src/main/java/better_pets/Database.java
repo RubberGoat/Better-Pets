@@ -22,7 +22,7 @@ public class Database {
     
     final private String database= "jdbc:sqlite:PetDatabase.db";
     
-    public void initialise() throws SQLException {
+    public void setupDatabase() throws SQLException {
         // Connect to Database 
        
         // Create Users table, with id, username, and password fields
