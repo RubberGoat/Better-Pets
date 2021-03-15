@@ -18,7 +18,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, SQLException {
-        // TODO: Create and initialise the database
+        // TODO: Create and setup the database (use a method in Database.java!)
         
         scene = new Scene(loadFXML("LoginScreen"), 640, 480);
         stage.setScene(scene);
