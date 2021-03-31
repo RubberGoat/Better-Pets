@@ -9,6 +9,7 @@ package better_pets;
  *
  * @author Rjian
  */
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,28 +18,59 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import static javafx.scene.input.KeyCode.P;
 
 public class Database {
     
     final private String database= "jdbc:sqlite:PetDatabase.db";
     
-    public void setupDatabase() throws SQLException {
+    public static void setupDatabase() throws SQLException, ClassNotFoundException {
+        Class.forName("org.sqlite.JDBC");
+        
         // Connect to Database 
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:PetDatabase.db");
+        
+        Statement st = conn.createStatement();
        
         // Create Users table, with id, username, and password fields
+        String createUsers = "CREATE TABLE IF NOT EXISTS USERS ("
+                     + "id INT(255) NOT NULL"
+                    + ",username VARCHAR(255) NOT NULL"
+                    + ", password VARCHAR(255) NOT NULL" 
+                    + ", PRIMARY KEY (id))";
+ 
+        
+         st.execute(createUsers);
+           
         
         // Insert a user account
+//        st.executeUpdate("INSERT INTO USERS " + " VALUES ('1','aldo','ay')");
         
         // Create Pets Table, with id, name, species, colour, and owner fields
+        String createPETS = "CREATE TABLE IF NOT EXISTS PETS ("
+                    + "id INT(255) NOT NULL"
+                    + ", name VARCHAR(255) NOT NULL"
+                    + ", species VARCHAR(255) NOT NULL"
+                    + ", colour VARCHAR(255) NOT NULL"
+                    + ", owner VARCHAR(255) NOT NULL" 
+                    + ", PRIMARY KEY (id))";
+        
+        
+        st.execute(createPETS);
         
         // Insert some pets into this table
+//        st.executeUpdate("INSERT INTO PETS " + " VALUES ('20','Shenron','Dragon', 'Green', 'Goku' )");
         
         // Close connections and statements
+     
+        
+           st.close();
+            conn.close();
     }
     
-    public void insertPets() throws SQLException{
+    public static void insertPets() throws SQLException{
         //create connection
-        Connection conn = DriverManager.getConnection(database);
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:PetDatabase.db");
         //create statement	
         Statement st = conn.createStatement();
 
@@ -67,33 +99,89 @@ public class Database {
         conn.close();
     }
     
-    public boolean login(String username, String password) throws SQLException {
-        Connection conn = DriverManager.getConnection(database);
+    public static boolean login(String username, String password) throws SQLException {
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:PetDatabase.db");
         PreparedStatement pst = conn.prepareStatement(
-            "SELECT * FROM Users WHERE USERNAME = ? AND PASSWORD = ?"
+            "SELECT * FROM USERS WHERE USERNAME = ? AND PASSWORD = ?"
         );
         pst.setString(1, username);
         pst.setString(2, password);
         ResultSet rs = pst.executeQuery();
         
         // Check if user exists - if so return true, else return false
+
         
-        return true;
+        
+        if(rs.next()){
+            pst.close();
+            conn.close();
+            return true;
+        } else {
+            pst.close();
+            conn.close();
+            return false;
+        }
+        
+       
+        
+       
+        
     }
     
-    public ObservableList<Pet> getPets() throws SQLException {
+
+    
+    public static ObservableList<Pet> getPets() throws SQLException {
         // Get ResultSet of all pets that exist in the database
-        Connection conn = DriverManager.getConnection(database);
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:PetDatabase.db");
         Statement st = conn.createStatement();
+        
         String query = "SELECT id, name, species, colour, owner FROM PETS";
         ResultSet rs = st.executeQuery(query);
         
         ObservableList<Pet> petsList = FXCollections.observableArrayList();
         // Add each row in the ResultSet to the petsList
         
+        while(rs.next()){
+
+           
+            petsList.add(new Pet(rs.getInt(1),
+                    rs.getString(2), 
+                    rs.getString(3),
+                    rs.getString(4),
+                    rs.getString(5)));
+        }     
+  
         // Close 
         st.close();
         conn.close();
         return petsList;
     }
+    
+//     public static void TABLEDelete()throws IOException, SQLException{
+//////        
+////       
+//         //create connection
+//        Connection conn = DriverManager.getConnection("jdbc:sqlite:PetDatabase.db");
+//        //create statement	
+//        Statement st = conn.createStatement();
+//        //write the SQL query and the java code to insert all four pets
+//        PreparedStatement pSt = conn.prepareStatement("DROP TABLE USERS "
+//        );
+//       
+//       pSt.executeUpdate();
+//       
+//        PreparedStatement sts = conn.prepareStatement("DROP TABLE PETS "
+//        );
+//       
+//       sts.executeUpdate();
+//
+//       st.close();
+//       conn.close();
+//
+//
+//       System.out.println("TABLE DELETEEE");
+////        
+////        
+//        
+//    }
 }
