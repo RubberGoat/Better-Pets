@@ -17,9 +17,10 @@ public class App extends Application {
     private static Scene scene;
 
     @Override
-    public void start(Stage stage) throws IOException, SQLException {
+    public void start(Stage stage) throws IOException, SQLException, ClassNotFoundException {
         // TODO: Create and setup the database (use a method in Database.java!)
-        
+        Database.setupDatabase();
+//        Database.TABLEDelete();
         scene = new Scene(loadFXML("LoginScreen"), 640, 480);
         stage.setScene(scene);
         stage.show();
